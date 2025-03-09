@@ -21,38 +21,36 @@ const RootStyle = styled("div")(() => ({
   overflow: "inherit",
 }));
 
-const StyledSlider = styled(Slider)(
-  ({ theme, padding }: { theme: Theme; padding: number }) => ({
-    display: "flex !important",
-    justifyContent: "center",
-    overflow: "initial !important",
-    "& > .slick-list": {
-      overflow: "visible",
+const SliderWrapper = styled("div")<{ padding: number }>(({ theme, padding }) => ({
+  display: "flex",
+  justifyContent: "center",
+  overflow: "initial",
+  // 注意这里要用 "!important" 覆盖 slick 样式
+  "& .slick-list": {
+    overflow: "visible",
+  },
+  [theme.breakpoints.up("sm")]: {
+    "& .slick-list": {
+      width: `calc(100% - ${2 * padding}px)`,
     },
-    [theme.breakpoints.up("sm")]: {
-      "& > .slick-list": {
-        width: `calc(100% - ${2 * padding}px)`,
-      },
-      "& .slick-list > .slick-track": {
-        margin: "0px !important",
-      },
-      "& .slick-list > .slick-track > .slick-current > div > .NetflixBox-root > .NetflixPaper-root:hover":
-        {
-          transformOrigin: "0% 50% !important",
-        },
+    "& .slick-list > .slick-track": {
+      margin: "0px !important",
     },
-    [theme.breakpoints.down("sm")]: {
-      "& > .slick-list": {
-        width: `calc(100% - ${padding}px)`,
+    "& .slick-list > .slick-track > .slick-current > div > .NetflixBox-root > .NetflixPaper-root:hover":
+      {
+        transformOrigin: "0% 50% !important",
       },
+  },
+  [theme.breakpoints.down("sm")]: {
+    "& .slick-list": {
+      width: `calc(100% - ${padding}px)`,
     },
-  })
-);
+  },
+}));
 
 interface SlideItemProps {
   item: Movie;
 }
-
 function SlideItem({ item }: SlideItemProps) {
   return (
     <Box sx={{ pr: { xs: 0.5, sm: 1 } }}>
@@ -66,8 +64,10 @@ interface SlickSliderProps {
   genre: Genre | CustomGenre;
   handleNext: (page: number) => void;
 }
+
 export default function SlickSlider({ data, genre }: SlickSliderProps) {
   const sliderRef = useRef<Slider>(null);
+
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [showExplore, setShowExplore] = useState(false);
   const [isEnd, setIsEnd] = useState(false);
@@ -89,13 +89,7 @@ export default function SlickSlider({ data, genre }: SlickSliderProps) {
     lazyLoad: "ondemand",
     slidesToShow: 6,
     slidesToScroll: 6,
-    // afterChange: (current) => {
-    //   console.log("After Change", current);
-    // },
     beforeChange,
-    // onEdge: (direction) => {
-    //   console.log("Edge: ", direction);
-    // },
     responsive: [
       {
         breakpoint: 1536,
@@ -148,26 +142,16 @@ export default function SlickSlider({ data, genre }: SlickSliderProps) {
           >
             <NetflixNavigationLink
               variant="h5"
-              to={`/genre/${
-                genre.id || genre.name.toLowerCase().replace(" ", "_")
-              }`}
+              to={`/genre/${genre.id || genre.name.toLowerCase().replace(" ", "_")}`}
               sx={{
                 display: "inline-block",
                 fontWeight: 700,
               }}
-              onMouseOver={() => {
-                setShowExplore(true);
-              }}
-              onMouseLeave={() => {
-                setShowExplore(false);
-              }}
+              onMouseOver={() => setShowExplore(true)}
+              onMouseLeave={() => setShowExplore(false)}
             >
               {`${genre.name} Movies `}
-              <MotionContainer
-                open={showExplore}
-                initial="initial"
-                sx={{ display: "inline", color: "success.main" }}
-              >
+              <MotionContainer open={showExplore} initial="initial" sx={{ display: "inline", color: "success.main" }}>
                 {"Explore All".split("").map((letter, index) => (
                   <motion.span key={index} variants={varFadeIn}>
                     {letter}
@@ -185,18 +169,15 @@ export default function SlickSlider({ data, genre }: SlickSliderProps) {
               onPrevious={handlePrevious}
               activeSlideIndex={activeSlideIndex}
             >
-              <StyledSlider
-                ref={sliderRef}
-                {...settings}
-                padding={ARROW_MAX_WIDTH}
-                theme={theme}
-              >
-                {data.results
-                  .filter((i) => !!i.backdrop_path)
-                  .map((item) => (
-                    <SlideItem key={item.id} item={item} />
-                  ))}
-              </StyledSlider>
+              <SliderWrapper padding={ARROW_MAX_WIDTH}>
+                <Slider ref={sliderRef} {...settings}>
+                  {data.results
+                    .filter((i) => !!i.backdrop_path)
+                    .map((item) => (
+                      <SlideItem key={item.id} item={item} />
+                    ))}
+                </Slider>
+              </SliderWrapper>
             </CustomNavigation>
           </RootStyle>
         </>
