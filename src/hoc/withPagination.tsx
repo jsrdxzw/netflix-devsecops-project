@@ -50,7 +50,6 @@ export default function withPagination(
           page,
         });
       }
-      // dispatch(setNextPage({ mediaType, itemKey }));
     }, []);
 
     if (pageState) {
