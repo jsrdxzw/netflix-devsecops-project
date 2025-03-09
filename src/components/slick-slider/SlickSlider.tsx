@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import Slider, { Settings } from "react-slick";
+import MySlider from "./MySlider";
 import { motion } from "framer-motion";
 
 import { styled, Theme, useTheme } from "@mui/material/styles";
@@ -170,13 +171,13 @@ export default function SlickSlider({ data, genre }: SlickSliderProps) {
               activeSlideIndex={activeSlideIndex}
             >
               <SliderWrapper padding={ARROW_MAX_WIDTH}>
-                <Slider ref={sliderRef} {...settings}>
+                <MySlider ref={sliderRef} {...settings}>
                   {data.results
                     .filter((i) => !!i.backdrop_path)
                     .map((item) => (
                       <SlideItem key={item.id} item={item} />
                     ))}
-                </Slider>
+                </MySlider>
               </SliderWrapper>
             </CustomNavigation>
           </RootStyle>
