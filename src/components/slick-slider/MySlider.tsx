@@ -6,7 +6,7 @@ interface MySliderProps extends Settings {
 }
 
 const MySlider = forwardRef<SlickSlider, MySliderProps>((props, ref) => {
-  return <SlickSlider ref={ref} {...props} />;
+  return React.createElement(SlickSlider as any, { ...props, ref });
 });
 
 export default MySlider;
